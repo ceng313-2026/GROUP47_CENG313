@@ -5,11 +5,13 @@ Course project for **CENG313 Introduction to Data Science** (group **47**).
 **Kaggle competition:** [CAFA 6 Protein Function Prediction](https://www.kaggle.com/competitions/cafa-6-protein-function-prediction)
 — predicting the Gene Ontology (GO) terms of a protein from its amino-acid sequence.
 
-**Current Kaggle score:** TODO (late submission; public / private score), see [Kaggle submission history](#kaggle-submission-history).
+**Current Kaggle score:** not available. The competition is closed and no longer accepts submissions
+(see [Kaggle submission history](#kaggle-submission-history)).
 
-> The competition is closed. TODO, keep the sentence that applies:
-> *Late submissions are accepted, so the score above comes from a late submission.* /
-> *Late submissions are not accepted, so models are evaluated on a held-out 20% split of the training data (`random_state=42`) with the competition metric.*
+**Current held-out score:** mean IA-weighted F-max **0.421** (MLP + propagation, Assignment 1 baseline).
+
+> The competition is closed and late submissions are not accepted, so all models are evaluated on a
+> held-out 20% split of the training data (`random_state=42`) with the competition metric.
 
 ## Group members
 
@@ -45,15 +47,16 @@ participants to predict these functions computationally.
 | `testsuperset.fasta` | sequences to predict |
 | `testsuperset-taxon-list.tsv` | species names of the test set |
 
-Key numbers (TODO: copy from section 2.2 of the Assignment 1 notebook after running it):
+Key numbers (from section 2 of the Assignment 1 notebook):
 
 | Quantity | Value |
 |---|---|
-| Training proteins | TODO |
-| Annotation rows | TODO |
-| Distinct GO terms in train | TODO |
-| Species in train | TODO |
-| Test proteins | TODO |
+| Training proteins | 82,404 |
+| Annotation rows (protein, GO term) | 537,027 (3,564,990 after propagation) |
+| Distinct GO terms in train | 26,125 (29,386 after propagation) |
+| Species in train | 1,381 |
+| Test proteins | 224,309 (8,453 species) |
+| Missing values / duplicate ids | none |
 
 **How to download the data.** The data is not stored in this repository (`data/` is in `.gitignore`).
 Join the competition on Kaggle and accept its rules, create an API key file (`kaggle.json`), and run the
@@ -110,16 +113,23 @@ models and evaluating the improvements against the Assignment 1 results.
 
 ## Results
 
-Validation set (held-out 20%), IA-weighted F-max (TODO: copy from notebook section 5.5 after running on the full data):
+Held-out validation set (20% of the training proteins, 16,481 proteins), IA-weighted F-max
+(notebook section 5.5):
 
 | Model | BPO | CCO | MFO | Mean |
 |---|---|---|---|---|
-| Naive (term frequency) | TODO | TODO | TODO | TODO |
-| k-NN (k=10) | TODO | TODO | TODO | TODO |
-| MLP | TODO | TODO | TODO | TODO |
-| MLP + propagation | TODO | TODO | TODO | TODO |
+| Naive (term frequency) | 0.224 | 0.359 | 0.364 | 0.316 |
+| k-NN (k=10) | 0.269 | 0.416 | 0.430 | 0.372 |
+| MLP | 0.288 | 0.479 | 0.484 | 0.417 |
+| **MLP + propagation** | **0.292** | **0.482** | **0.490** | **0.421** |
 
-Main findings: TODO (2–4 sentences).
+For reference: random scores give 0.056, and a perfect prediction of the 1,100 terms we keep would give 0.873.
+
+Main findings: the naive baseline is already strong (0.316) because a few generic GO terms occur in most
+proteins. Using the sequence helps: the MLP with hierarchy propagation is 33% better than the naive
+baseline. Biological Process is clearly the hardest aspect (0.292), which matches the EDA: it has the
+largest vocabulary, the deepest terms and the longest tail. The best baseline reaches less than half of
+the upper bound of its own label space, so there is a lot of room for Assignment 2.
 
 ## How to run
 
@@ -148,22 +158,25 @@ For a quick test run set `MAX_PROTEINS = 5000` in the configuration cell of sect
 
 ## Kaggle submission history
 
-| Date | Model | Validation F-max (mean) | Kaggle public | Kaggle private | Screenshot |
+| Date | Model | Validation F-max (mean) | Kaggle public | Kaggle private | Notes |
 |---|---|---|---|---|---|
-| TODO | TODO | TODO | TODO | TODO | `submissions/TODO.png` |
+| 2026-11-13 | MLP + propagation (Assignment 1 baseline) | 0.421 | not available | not available | Late submission attempted with the Kaggle API and rejected (`400 Bad Request`); the submit button on the competition page is disabled. See notebook section 6 and `submissions/`. |
 
 ## Progress log
 
-| Date | Who | What was done |
-|---|---|---|
-| 2026-11-10 | TODO | Studied the competition, its data files and the evaluation metric; planned Assignment 1 |
-| 2026-11-13 | TODO | Created the repository and the README |
-| 2026-11-13 | TODO | Joined the course organization and the Kaggle competition |
-| 2026-11-13 | TODO | Added the source modules (`src/`) and the Assignment 1 notebook |
-| TODO | TODO | TODO: ran the notebook on the full data, wrote the interpretations, made the Kaggle submission |
+| Date | What was done |
+|---|---|
+| 2026-11-10 | Studied the competition, its data files and the evaluation metric; planned Assignment 1 |
+| 2026-11-13 | Created the repository and the README; joined the course organization and the Kaggle competition |
+| 2026-11-13 | Added the source modules (`src/`) and the Assignment 1 notebook; transferred the repository to `ceng313-2026` |
+| 2026-11-13 | Ran the notebook on the full data (EDA, preprocessing, three baselines), wrote the interpretations |
+| 2026-11-13 | Tried a Kaggle late submission (rejected, competition closed); reported the held-out evaluation instead |
 
 ## References
 
 - CAFA 6 competition page: https://www.kaggle.com/competitions/cafa-6-protein-function-prediction
 - Gene Ontology: http://geneontology.org
-- TODO: add every paper, notebook or tool you actually used.
+- Public write-up used for the comparison in notebook section 6: https://nihalsulaiman.blogspot.com/2026/01/cafa-6-protein-function-prediction-bio.html
+- Libraries: NumPy, pandas, SciPy, scikit-learn, Matplotlib; Kaggle API for the data download.
+- AI assistance: Claude (Anthropic) was used to help write the code in `src/`, the notebook and its text.
+  No Kaggle notebook or cell was copied.
